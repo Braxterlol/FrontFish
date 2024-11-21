@@ -1,0 +1,80 @@
+.water-timer {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .circle-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 5px solid #e6e6e6;
+    background-color: #fff;
+    overflow: hidden;
+  }
+  
+  .water-level {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #00bcd4;  /* Color del agua */
+    transition: height 1s ease-out; /* Suaviza el efecto de vaciado */
+    overflow: hidden;
+  }
+  
+  .water-surface {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;  /* Altura de la parte superior que tendrá las ondas */
+    background-color: #00bcd4;  /* Color de las ondas */
+    animation: wave 1s infinite linear;  /* Animación de ondas */
+  }
+  
+  .circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #333;
+    z-index: 1;
+  }
+  
+  .timer-text {
+    position: absolute;
+    font-size: 18px;
+    color: #333;
+    z-index: 2;
+  }
+  
+  button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+  }
+  
+  /* Animación de ondas */
+  @keyframes wave {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-10px); /* Movimiento a la izquierda */
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  

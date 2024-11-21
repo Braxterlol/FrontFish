@@ -1,0 +1,60 @@
+/* Efecto de destello alrededor del círculo */
+.glow-effect {
+    animation: glow 1s ease-in-out;
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 165, 0, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 69, 0, 1), 0 0 40px rgba(255, 0, 0, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 165, 0, 0.6);
+    }
+}
+
+/* Efecto de burbujas explosivas */
+.explosive-bubbles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.bubble {
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, #ff6347, #ff4500);
+    border-radius: 50%;
+    position: absolute;
+    opacity: 0;
+    animation: explode 1s ease-in-out forwards;
+}
+
+.bubble:nth-child(1) { animation-delay: 0.1s; left: 0; top: 0; }
+.bubble:nth-child(2) { animation-delay: 0.2s; left: 25%; top: -25%; }
+.bubble:nth-child(3) { animation-delay: 0.3s; left: 50%; top: -50%; }
+.bubble:nth-child(4) { animation-delay: 0.4s; left: 75%; top: -25%; }
+.bubble:nth-child(5) { animation-delay: 0.5s; left: 100%; top: 0; }
+.bubble:nth-child(6) { animation-delay: 0.6s; left: 75%; top: 25%; }
+.bubble:nth-child(7) { animation-delay: 0.7s; left: 50%; top: 50%; }
+.bubble:nth-child(8) { animation-delay: 0.8s; left: 25%; top: 25%; }
+
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
