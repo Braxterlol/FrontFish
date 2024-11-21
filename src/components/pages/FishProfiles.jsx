@@ -26,7 +26,7 @@ const FishProfiles = () => {
     const fetchFishData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await fetch('http://54.225.86.156:4000/especies', {
+        const response = await fetch('https://fishmaster.duckdns.org/especies', {
                 headers: {
                     Authorization: `Bearer ${token}`, // Correcto formato
                 },
@@ -49,7 +49,7 @@ const FishProfiles = () => {
 
     try {
       const token = Cookies.get("token");
-      const response = await fetch(`http://54.225.86.156:4000/especies/${id_especie}`, {
+      const response = await fetch(`https://fishmaster.duckdns.org/especies/${id_especie}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,7 +77,7 @@ const FishProfiles = () => {
   const handleSelectFish = async (id_especie) => {
     try {
       const token = Cookies.get("token");
-      const response = await fetch('http://localhost:4000/especies_user', {
+      const response = await fetch('https://fishmaster.duckdns.org/especies_user', {
         method: 'POST', // Cambiar según tu backend
         headers: {
           'Content-Type': 'application/json',

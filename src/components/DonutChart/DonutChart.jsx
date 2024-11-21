@@ -59,7 +59,7 @@ const DonutChart = () => {
   const saveSensorData = async (temperature, pH) => {
     try {
       const storedIdEspecie = localStorage.getItem('IdEspecie');
-      const response = await fetch('http://54.225.86.156:4000/recomendaciones/createrecomedation', {
+      const response = await fetch('https://fishmaster.duckdns.org/recomendaciones/createrecomedation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ const FishProfiles = () => {
   useEffect(() => {
     const fetchFishData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/especies');
+        const response = await fetch('https://fishmaster.duckdns.org/especies');
         const data = await response.json();
         setFishData(data);
       } catch (error) {
@@ -56,7 +56,7 @@ const FishProfiles = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/especies/${fishData[selectedFishIndex].id_especie}`, {
+      const response = await fetch(`https://fishmaster.duckdns.org/especies/${fishData[selectedFishIndex].id_especie}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFish)
@@ -81,7 +81,7 @@ const FishProfiles = () => {
 
   const handleDeleteFish = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/especies/${fishData[selectedFishIndex].id_especie}`, {
+      const response = await fetch(`https://fishmaster.duckdns.org/especies/${fishData[selectedFishIndex].id_especie}`, {
         method: 'DELETE'
       });
 

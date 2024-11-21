@@ -34,7 +34,7 @@ const FishRegistrationForm = () => {
     const fetchFishData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get('http://54.225.86.156:4000/especies', {
+        const response = await axios.get('https://fishmaster.duckdns.org/especies', {
           headers: {
             Authorization: `Bearer ${token}`, // Correcto formato
           },
@@ -83,7 +83,7 @@ const FishRegistrationForm = () => {
 
       // Registrar la especie
       const response = await axios.post(
-        'http://54.225.86.156:4000/especies',
+        'https://fishmaster.duckdns.org/especies',
         newFish,
         {
           headers: {
@@ -98,7 +98,7 @@ const FishRegistrationForm = () => {
 
       // Asignar especie al usuario
       await axios.post(
-        'http://54.225.86.156:4000/especies_user',
+        'https://fishmaster.duckdns.org/especies_user',
         { idUsuario, idEspecie }, // Datos como cuerpo de la solicitud
         {
           headers: {

@@ -12,7 +12,7 @@ function TemperatureWaterLevelGraph() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://54.225.86.156:4000/datos/getdatos'); // Llamada al backend
+        const response = await axios.get('https://fishmaster.duckdns.org/datos/getdatos'); // Llamada al backend
         // Asumimos que la respuesta contiene todos los datos de la tabla
         const formattedData = response.data.map((item) => ({
           temperature: item.temperatura_agua, // Ajustar según las columnas de tu tabla

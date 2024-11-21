@@ -13,7 +13,7 @@ const TemperatureChart = () => {
     const fetchData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get('http://54.225.86.156:4000/datos/getdatos', {
+        const response = await axios.get('https://fishmaster.duckdns.org/datos/getdatos', {
           headers: {
               Authorization: `Bearer ${token}`, // Correcto formato
           },

@@ -26,7 +26,7 @@ const AddRecomendation = () => {
 
   const calculateRecommendations = async () => {
     try {
-      const response = await axios.post('http://54.225.86.156:5000/calcular_recomendaciones', formData);
+      const response = await axios.post('https://fishmaster.duckdns.org/calcular_recomendaciones', formData);
       setRecommendations(response.data);
       setError(null);
     } catch (err) {

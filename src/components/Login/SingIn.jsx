@@ -29,7 +29,7 @@
       }
 
       try {
-        const response = await fetch("http://54.225.86.156:4000/login", {
+        const response = await fetch("https://fishmaster.duckdns.org/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

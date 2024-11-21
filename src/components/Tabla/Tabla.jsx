@@ -47,7 +47,7 @@ function HistorialAlimentador() {
              
 
             const token = Cookies.get("token");
-            const response = await axios.get('http://54.225.86.156:4000/alimentacion', {
+            const response = await axios.get('https://fishmaster.duckdns.org/alimentacion', {
                 headers: {
                     Authorization: `Bearer ${token}`, // Correcto formato
                 },
