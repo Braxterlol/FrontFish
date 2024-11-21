@@ -85,7 +85,7 @@ const DonutChart = () => {
   };
 
   useEffect(() => {
-    const ws = new WebSocket('ws://3.233.63.214:8080'); // Cambia la URL según tu servidor WebSocket
+    const ws = new WebSocket('wss://wsfish.zapto.org:8443'); // Cambia la URL según tu servidor WebSocket
 
     ws.onopen = () => {
       console.log('Conexión WebSocket establecida');
