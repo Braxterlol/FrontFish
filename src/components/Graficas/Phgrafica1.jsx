@@ -3,12 +3,10 @@ import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Container, Typography, Paper, Button } from '@mui/material';
 import Cookies from "js-cookie";
-
 const TemperatureChart = () => {
   const [data, setData] = useState([]); // Todos los datos obtenidos
-  const [selectedTankId, setSelectedTankId] = useState(null); // ID del estanque seleccionado
+  const [selectedTank, setSelectedTank] = useState(0); // Índice del estanque seleccionado
   const [tankData, setTankData] = useState([]); // Datos filtrados para el estanque seleccionado
-  const [tankIds, setTankIds] = useState([]); // Lista de IDs de estanques disponibles
 
   useEffect(() => {
     // Hacer la solicitud a la API
@@ -17,24 +15,15 @@ const TemperatureChart = () => {
         const token = Cookies.get("token");
         const response = await axios.get('https://fishmaster.duckdns.org/datos/getdatos', {
           headers: {
-            Authorization: `Bearer ${token}`, // Correcto formato
+              Authorization: `Bearer ${token}`, // Correcto formato
           },
-        });
-
-        // Agrupar datos por id_usuario_especie
-        const groupedData = response.data.reduce((acc, item) => {
-          const { id_usuario_especie, temperatura_agua, fecha } = item;
-          if (!acc[id_usuario_especie]) acc[id_usuario_especie] = [];
-          acc[id_usuario_especie].push({
-            temperature: parseFloat(temperatura_agua),
-            timestamp: new Date(fecha).toLocaleTimeString(), // Convertir a formato legible
-          });
-          return acc;
-        }, {});
-
-        setData(groupedData);
-        setTankIds(Object.keys(groupedData)); // IDs de estanques disponibles
-        setSelectedTankId(Object.keys(groupedData)[0]); // Seleccionar el primer estanque por defecto
+      });
+        const fetchedData = response.data.map((item, index) => ({
+          id: index + 1, // Suponiendo que los estanques están numerados
+          temperature: item.temperatura_agua, // Ajustar según el nombre exacto de la columna
+        }));
+        setData(fetchedData);
+        setSelectedTank(0); // Seleccionar el primer estanque por defecto
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
@@ -45,28 +34,23 @@ const TemperatureChart = () => {
 
   useEffect(() => {
     // Filtrar los datos para el estanque seleccionado
-    if (selectedTankId && data[selectedTankId]) {
-      setTankData(data[selectedTankId]);
-    }
-  }, [data, selectedTankId]);
+    const filteredData = data.filter((_, index) => index === selectedTank);
+    setTankData(filteredData);
+  }, [data, selectedTank]);
 
   const handlePrevious = () => {
-    const currentIndex = tankIds.indexOf(selectedTankId);
-    const previousIndex = (currentIndex > 0) ? currentIndex - 1 : tankIds.length - 1;
-    setSelectedTankId(tankIds[previousIndex]);
+    setSelectedTank((prev) => (prev > 0 ? prev - 1 : data.length - 1));
   };
 
   const handleNext = () => {
-    const currentIndex = tankIds.indexOf(selectedTankId);
-    const nextIndex = (currentIndex < tankIds.length - 1) ? currentIndex + 1 : 0;
-    setSelectedTankId(tankIds[nextIndex]);
+    setSelectedTank((prev) => (prev < data.length - 1 ? prev + 1 : 0));
   };
 
   return (
     <Container>
       <Paper elevation={3} style={{ padding: '20px' }}>
         <Typography variant="h5" gutterBottom>
-          Estanque ID: {selectedTankId}
+          Temperatura del Estanque {selectedTank + 1}
         </Typography>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
           <Button variant="contained" color="primary" onClick={handlePrevious}>
@@ -79,7 +63,7 @@ const TemperatureChart = () => {
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={tankData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="timestamp" />
+            <XAxis dataKey="id" />
             <YAxis />
             <Tooltip />
             <Legend />

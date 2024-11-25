@@ -1,19 +1,18 @@
 // App.js
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
-import PHChangeGraph from '../Graficas/Phgrafica';
-import DeviationBoxPlot from '../Graficas/DeviationBoxPlot';
-import CriticalValuesPie from '../Graficas/CriticalValuesPie';
-import RiskAnalysis from '../Graficas/RiskAnalysis'; 
+import PHChangeGraph from './Phgrafica';
+import DeviationBoxPlot from './DeviationBoxPlot';
+import CriticalValuesPie from './CriticalValuesPie';
+import RiskAnalysis from './RiskAnalysis'; 
 
 function Graficas() {
   return (
-    <Container sx={{ marginTop: '89rem' }}>
-     
-      <Box sx={{ marginTop:100 }}>
-      <Typography color="textSecondary" variant="h4" align="center" gutterBottom>
+    <Container>
+      <Typography variant="h4" align="center" gutterBottom>
         Monitoreo Estadístico de Criadero de Peces
       </Typography>
+      <Box sx={{ marginTop:100 }}>
         <PHChangeGraph />
       </Box>
       <Box sx={{ marginTop: 10 }}>
@@ -22,7 +21,7 @@ function Graficas() {
       <Box sx={{ marginTop: 10 }}>
         <CriticalValuesPie />
       </Box>
-      <Box sx={{ marginTop: 10, marginBottom:30}}>
+      <Box sx={{ marginTop: 10 }}>
         {/* Agregamos el componente de análisis de riesgo */}
         <RiskAnalysis />
       </Box>

@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Paper, Typography } from '@mui/material';
-import Cookies from 'js-cookie';
 
 function TemperatureWaterLevelGraph() {
   const [scatterData, setScatterData] = useState([]); // Estado para almacenar los datos
@@ -21,26 +12,14 @@ function TemperatureWaterLevelGraph() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = Cookies.get('token');
-        if (!token) {
-          throw new Error('Token no encontrado. Por favor, inicie sesión.');
-        }
-
-        const response = await axios.get('https://fishmaster.duckdns.org/datos/getdatos', {
-          headers: {
-            Authorization: `Bearer ${token}`, // Autorización con token
-          },
-        });
-
-        // Formatear los datos para el ScatterChart
+        const response = await axios.get('https://fishmaster.duckdns.org/datos/getdatos'); // Llamada al backend
+        // Asumimos que la respuesta contiene todos los datos de la tabla
         const formattedData = response.data.map((item) => ({
           temperature: item.temperatura_agua, // Ajustar según las columnas de tu tabla
           waterLevel: item.nivel_agua,
         }));
-
         setScatterData(formattedData);
       } catch (err) {
-        console.error('Error al cargar los datos:', err);
         setError('Error al cargar los datos del backend');
       } finally {
         setLoading(false);
@@ -59,14 +38,7 @@ function TemperatureWaterLevelGraph() {
   }
 
   return (
-    <Paper
-      sx={{
-        marginTop: '60px',
-        padding: 2,
-        borderRadius: 2,
-        boxShadow: 3,
-      }}
-    >
+    <Paper sx={{ marginTop: '60px', padding: 2, borderRadius: 2, boxShadow: 3 }}>
       <Typography variant="h6" gutterBottom>
         Relación entre Temperatura y Nivel de Agua
       </Typography>

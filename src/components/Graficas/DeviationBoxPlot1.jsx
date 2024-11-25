@@ -16,30 +16,19 @@ function PHGraph() {
         const token = Cookies.get("token");
         const response = await axios.get('https://fishmaster.duckdns.org/datos/getdatos', {
           headers: {
-            Authorization: `Bearer ${token}`, // Correcto formato
+              Authorization: `Bearer ${token}`, // Correcto formato
           },
-        });
+      }); // Llamada al backend
 
-        // Agrupar datos por id_usuario_especie y calcular pH promedio si hay varios registros
-        const groupedData = response.data.reduce((acc, item) => {
-          const { id_usuario_especie, ph_agua } = item;
-          if (!acc[id_usuario_especie]) acc[id_usuario_especie] = { id: `Estanque ${id_usuario_especie}`, phValues: [] };
-          acc[id_usuario_especie].phValues.push(parseFloat(ph_agua));
-          return acc;
-        }, {});
-
-        // Formatear datos para la gráfica (calcular promedio de pH)
-        const formattedData = Object.values(groupedData).map(estanque => ({
-          id: estanque.id,
-          ph: (
-            estanque.phValues.reduce((sum, val) => sum + val, 0) / estanque.phValues.length
-          ).toFixed(2), // Promedio de pH con 2 decimales
+        // Procesar los datos para adaptarlos al formato esperado
+        const formattedData = response.data.map((item, index) => ({
+          id: `Estanque ${index + 1}`, // Identificador del estanque
+          ph: item.ph_agua, // Ajustar al nombre exacto de la columna en la base de datos
         }));
 
         setPHData(formattedData);
       } catch (err) {
         setError('Error al cargar los datos del backend');
-        console.error(err);
       } finally {
         setLoading(false);
       }

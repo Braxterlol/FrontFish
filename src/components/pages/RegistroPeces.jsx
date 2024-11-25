@@ -10,7 +10,7 @@ import {
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom'; // Importar useNavigate
+import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/pez1-removebg-preview.png';
 import axios from 'axios';
 
@@ -28,7 +28,7 @@ const FishRegistrationForm = () => {
   const fishOptions = ['Tilapia', 'Trucha', 'Salmon', 'Pez gato', 'Otro'];
   const habitatOptions = ['Río', 'Lago', 'Acuario', 'Océano', 'Otro'];
 
-  const navigate = useNavigate(); // Inicializar navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFishData = async () => {
@@ -36,7 +36,7 @@ const FishRegistrationForm = () => {
         const token = Cookies.get("token");
         const response = await axios.get('https://fishmaster.duckdns.org/especies', {
           headers: {
-            Authorization: `Bearer ${token}`, // Correcto formato
+            Authorization: `Bearer ${token}`,
           },
         });
         setFishData(response.data);
@@ -81,13 +81,12 @@ const FishRegistrationForm = () => {
     try {
       const token = Cookies.get("token");
 
-      // Registrar la especie
       const response = await axios.post(
         'https://fishmaster.duckdns.org/especies',
         newFish,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Correcto formato
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -96,13 +95,12 @@ const FishRegistrationForm = () => {
       const idUsuario = localStorage.getItem('userId');
       localStorage.setItem('IdEspecie', idEspecie);
 
-      // Asignar especie al usuario
       await axios.post(
         'https://fishmaster.duckdns.org/especies_user',
-        { idUsuario, idEspecie }, // Datos como cuerpo de la solicitud
+        { idUsuario, idEspecie },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Correcto formato
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -114,7 +112,6 @@ const FishRegistrationForm = () => {
 
       setFishData([...fishData, newFish]);
 
-      // Resetear los campos
       setNombreComun('');
       setCustomNombreComun('');
       setNombreCientifico('');
@@ -124,8 +121,7 @@ const FishRegistrationForm = () => {
       setHabitat('');
       setCustomHabitat('');
 
-      // Redirigir al usuario
-      navigate('/Recomendacion');
+      navigate('/Recomendacion', { state: newFish });
     } catch (error) {
       toast.error('Error al registrar la especie o asignarla al usuario.', {
         position: 'top-right',
@@ -134,31 +130,11 @@ const FishRegistrationForm = () => {
     }
   };
 
-  const validateText = (text) => /^[a-zA-Z\s]*$/.test(text);
-  const validateNumber = (num) => /^\d*$/.test(num);
-
   return (
-    <Container display="flex" justifyContent="center" alignItems="center" maxWidth="sm" style={{ marginTop: '15rem' }}>
-      <Box
-        border={2}
-        borderColor="grey.300"
-        borderRadius={2}
-        p={4}
-        style={{ position: 'relative', paddingTop: '4rem' }}
-      >
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          style={{
-            marginTop: '-50px',
-            width: '100%',
-          }}
-        >
+    <Container maxWidth="sm" style={{ marginTop: '15rem' }}>
+      <Box border={2} borderRadius={2} p={4}>
+        <Box display="flex" justifyContent="center" alignItems="center">
           <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
             style={{
               width: '170px',
               height: '170px',
@@ -185,28 +161,6 @@ const FishRegistrationForm = () => {
               value={nombreComun}
               onChange={(e) => setNombreComun(e.target.value)}
               required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  color: 'black', // Cambiar color del texto a negro
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#7a7c7e', // Cambiar color del label a negro
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                },
-              }}
             >
               {fishOptions.map((option) => (
                 <MenuItem key={option} value={option}>
@@ -222,30 +176,8 @@ const FishRegistrationForm = () => {
                 label="Especifica el nombre común"
                 variant="outlined"
                 value={customNombreComun}
-                onChange={(e) => validateText(e.target.value) && setCustomNombreComun(e.target.value)}
+                onChange={(e) => setCustomNombreComun(e.target.value)}
                 required
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                    },
-                    '&:hover fieldset': {
-                      borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                    },
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'black', // Cambiar color del texto a negro
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: '#7a7c7e', // Cambiar color del label a negro
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                  },
-                }}
               />
             </Box>
           )}
@@ -255,30 +187,8 @@ const FishRegistrationForm = () => {
               label="Nombre científico"
               variant="outlined"
               value={nombreCientifico}
-              onChange={(e) => validateText(e.target.value) && setNombreCientifico(e.target.value)}
+              onChange={(e) => setNombreCientifico(e.target.value)}
               required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  color: 'black', // Cambiar color del texto a negro
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#7a7c7e', // Cambiar color del label a negro
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                },
-              }}
             />
           </Box>
           <Box mb={2}>
@@ -288,30 +198,8 @@ const FishRegistrationForm = () => {
               variant="outlined"
               type="number"
               value={edad}
-              onChange={(e) => validateNumber(e.target.value) && setEdad(e.target.value)}
+              onChange={(e) => setEdad(e.target.value)}
               required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  color: 'black', // Cambiar color del texto a negro
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#7a7c7e', // Cambiar color del label a negro
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                },
-              }}
             />
           </Box>
           <Box mb={2}>
@@ -321,30 +209,8 @@ const FishRegistrationForm = () => {
               variant="outlined"
               type="number"
               value={tamano}
-              onChange={(e) => validateNumber(e.target.value) && setTamano(e.target.value)}
+              onChange={(e) => setTamano(e.target.value)}
               required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  color: 'black', // Cambiar color del texto a negro
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#7a7c7e', // Cambiar color del label a negro
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                },
-              }}
             />
           </Box>
           <Box mb={2}>
@@ -354,30 +220,8 @@ const FishRegistrationForm = () => {
               variant="outlined"
               type="number"
               value={peso}
-              onChange={(e) => validateNumber(e.target.value) && setPeso(e.target.value)}
+              onChange={(e) => setPeso(e.target.value)}
               required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  color: 'black', // Cambiar color del texto a negro
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#7a7c7e', // Cambiar color del label a negro
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                },
-              }}
             />
           </Box>
           <Box mb={2}>
@@ -389,28 +233,6 @@ const FishRegistrationForm = () => {
               value={habitat}
               onChange={(e) => setHabitat(e.target.value)}
               required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  color: 'black', // Cambiar color del texto a negro
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#7a7c7e', // Cambiar color del label a negro
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                },
-              }}
             >
               {habitatOptions.map((option) => (
                 <MenuItem key={option} value={option}>
@@ -426,30 +248,8 @@ const FishRegistrationForm = () => {
                 label="Especifica el hábitat"
                 variant="outlined"
                 value={customHabitat}
-                onChange={(e) => validateText(e.target.value) && setCustomHabitat(e.target.value)}
+                onChange={(e) => setCustomHabitat(e.target.value)}
                 required
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: '#7a7c7e', // Cambiar el color del borde a negro
-                    },
-                    '&:hover fieldset': {
-                      borderColor: '#7a7c7e', // Cambiar el borde al pasar el cursor
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#7a7c7e', // Cambiar el borde cuando el campo está enfocado
-                    },
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'black', // Cambiar color del texto a negro
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: '#7a7c7e', // Cambiar color del label a negro
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: '#7a7c7e', // Asegurar que el label enfocado también sea negro
-                  },
-                }}
               />
             </Box>
           )}

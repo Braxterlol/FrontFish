@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -7,84 +7,51 @@ import {
   Container,
   Alert,
 } from '@mui/material';
-import axios from 'axios';
-
+import { useLocation } from 'react-router-dom';
 
 const AddRecomendation = () => {
-  const [formData, setFormData] = useState({
-    edad: '',
-    tamaño: '',
-    peso: '',
-  });
+  const { state } = useLocation(); // Datos enviados desde FishRegistrationForm
+  const [formData, setFormData] = useState(state || { edad: '', tamaño: '', peso: '' });
   const [recommendations, setRecommendations] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(null);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const calculateRecommendations = async () => {
-    try {
-      const response = await axios.post('https://fishmaster.duckdns.org/calcular_recomendaciones', formData);
-      setRecommendations(response.data);
-      setError(null);
-    } catch (err) {
-      setRecommendations(null);
-      setError('Error al calcular las recomendaciones.');
+  useEffect(() => {
+    if (state) {
+      calculateRecommendations(state);
     }
+  }, [state]);
+
+  const calculateRecommendations = (data) => {
+    // Lógica local para calcular las recomendaciones
+    const edad = parseInt(data.edad, 10) || 0;
+    const tamaño = parseFloat(data.tamaño) || 0;
+    const peso = parseFloat(data.peso) || 0;
+
+    // Ejemplo de reglas básicas para generar recomendaciones
+    const frecuenciaAlimentacion = edad < 12 ? '3 veces al día' : '2 veces al día';
+    const cantidadAlimento = `${(peso * 0.05).toFixed(2)} g`;
+    const temperatura = tamaño < 10 ? 25 : 20; // Temperatura ideal según tamaño
+    const ph = tamaño < 10 ? 6.5 : 7.0; // pH recomendado
+
+    setRecommendations({
+      frecuencia_alimentacion: frecuenciaAlimentacion,
+      cantidad_alimento: cantidadAlimento,
+      temperatura,
+      ph,
+    });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      // Aquí se enviaría el formulario al backend si se desea guardar
-      console.log('Datos enviados:', recommendations || formData);
-      setSuccess(true);
-    } catch (err) {
-      setSuccess(false);
-      setError('Error al guardar la recomendación.');
-    }
+    setSuccess(true);
   };
+
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Typography variant="h4" gutterBottom>
-        Agregar Recomendación
+      <Typography color="textSecondary" variant="h4" gutterBottom>
+        Recomendaciones
       </Typography>
-  
-      <Box sx={{ mt: 2, mb: 2 }}>
-        <TextField
-          fullWidth
-          label="Edad"
-          name="edad"
-          value={formData.edad}
-          onChange={handleChange}
-          margin="normal"
-          required
-        />
-        <TextField
-          fullWidth
-          label="Tamaño"
-          name="tamaño"
-          value={formData.tamaño}
-          onChange={handleChange}
-          margin="normal"
-          required
-        />
-        <TextField
-          fullWidth
-          label="Peso"
-          name="peso"
-          value={formData.peso}
-          onChange={handleChange}
-          margin="normal"
-          required
-        />
-        <Button variant="contained" color="primary" onClick={calculateRecommendations} sx={{ mt: 2 }}>
-          Calcular Recomendaciones
-        </Button>
-      </Box>
-  
+
       {recommendations && (
         <Box
           sx={{
@@ -92,41 +59,33 @@ const AddRecomendation = () => {
             mb: 2,
             border: '1px solid #ccc',
             borderRadius: '5px',
-            backgroundColor: '#ffffff', // Fondo blanco
-            color: '#000', // Letras negras
-            boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Sombra suave
+            backgroundColor: '#ffffff',
           }}
         >
-          <Typography variant="subtitle1" fontWeight="bold">
+          <Typography color="textSecondary" variant="subtitle1" fontWeight="bold">
             Recomendaciones Calculadas:
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{ color: '#000', fontWeight: 'bold', marginBottom: '8px' }} // Asegura que sea negro y claro
-          >
+          <Typography color="textSecondary" variant="body1">
             Frecuencia de alimentación: {recommendations.frecuencia_alimentacion}
           </Typography>
-          <Typography variant="body1" sx={{ color: '#000', marginBottom: '8px' }}>
+          <Typography color="textSecondary" variant="body1">
             Cantidad de alimento: {recommendations.cantidad_alimento}
           </Typography>
-          <Typography variant="body1" sx={{ color: '#000', marginBottom: '8px' }}>
+          <Typography color="textSecondary" variant="body1">
             Temperatura: {recommendations.temperatura} °C
           </Typography>
-          <Typography variant="body1" sx={{ color: '#000', marginBottom: '8px' }}>
-            pH: {recommendations.ph}
-          </Typography>
+          <Typography color="textSecondary" variant="body1">pH: {recommendations.ph}</Typography>
         </Box>
       )}
-  
+
       <Box component="form" onSubmit={handleSubmit}>
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-          Guardar Recomendación
+        <Button  type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+          Guardar Recomendaciones
         </Button>
         {success && <Alert severity="success" sx={{ mt: 2 }}>¡Recomendación guardada con éxito!</Alert>}
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
       </Box>
     </Container>
   );
-};  
+};
 
 export default AddRecomendation;

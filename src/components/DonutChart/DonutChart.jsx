@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Cookies from "js-cookie";
+import axios from 'axios';
 import {
   CircularProgress,
   Box,
@@ -56,36 +58,47 @@ const DonutChart = () => {
 
   const open = Boolean(anchorEl);
 
-  const saveSensorData = async (temperature, pH) => {
-    try {
-      const storedIdEspecie = localStorage.getItem('IdEspecie');
-      const response = await fetch('https://fishmaster.duckdns.org/recomendaciones/createrecomedation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id_especie: storedIdEspecie,
-          frecuencia_alimentacion: '30',
-          cantidad_alimento: '200g',
-          temperatura_agua: temperature.toFixed(2),
-          ph_agua: pH.toFixed(2),
-        }),
-      });
+  useEffect(() => {
+    const saveDataInterval = setInterval(() => {
+      const saveSensorData = async () => {
+        try {
+          const token = Cookies.get("token");
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Datos guardados correctamente:', data);
-      } else {
-        console.error('Error al guardar los datos:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error en la solicitud POST:', error);
-    }
-  };
+          const dataToSave = {
+            id_usuario_especie: 18,
+            temperatura: sensorData.temperature.toFixed(2),
+            ph: sensorData.pH.toFixed(2),
+            nivel: sensorData.waterLevel === 'Suficiente' ? 1 : 0, // 1 para suficiente, 0 para falta de agua
+            cantidad_peces: 2,
+          };
+
+          console.log("Datos que se van a guardar:", dataToSave);
+
+          const response = await axios.post(
+            'https://fishmaster.duckdns.org/datos/createdatos',
+            dataToSave,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log('Respuesta del servidor:', response.data);
+        } catch (error) {
+          console.error('Error al guardar los datos:', error.response?.data || error.message);
+        }
+      };
+
+      console.log("Ejecutando saveSensorData...");
+      saveSensorData();
+    }, 60000);
+
+    return () => clearInterval(saveDataInterval); // Limpiar el intervalo al desmontar
+  }, []);
 
   useEffect(() => {
-    const ws = new WebSocket('wss://wsfish.zapto.org:8443'); // Cambia la URL según tu servidor WebSocket
+    const ws = new WebSocket('wss://wsfish.zapto.org:8443');
 
     ws.onopen = () => {
       console.log('Conexión WebSocket establecida');
@@ -106,14 +119,10 @@ const DonutChart = () => {
             if (queue === 'temperature_data') {
               const temperature = parseFloat(message);
               updatedData.temperature = temperature;
-
-              saveSensorData(temperature, prevData.pH);
             } else if (queue === 'datos') {
               if (message.startsWith('pH')) {
                 const pH = parseFloat(message.split('|')[0].split(': ')[1]);
                 updatedData.pH = pH;
-
-                saveSensorData(prevData.temperature, pH);
               } else if (message.includes('CIRCUITO CERRADO')) {
                 updatedData.waterLevel = 'Falta Agua';
               } else if (message.includes('CIRCUITO ABIERTO')) {
@@ -141,14 +150,6 @@ const DonutChart = () => {
       ws.close();
     };
   }, []);
-
-  const getNormalizedValue = (value, type) => {
-    if (type === 'Nivel de agua') return value === 'Suficiente' ? 100 : 0;
-    const { ideal, range } = config[type];
-    const min = ideal - range;
-    const max = ideal + range;
-    return Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
-  };
 
   return (
     <Box sx={{ textAlign: 'center', my: 3 }}>
@@ -200,14 +201,7 @@ const DonutChart = () => {
               >
                 <CircularProgress
                   variant="determinate"
-                  value={getNormalizedValue(
-                    item === 'Temperatura'
-                      ? sensorData.temperature
-                      : item === 'PH'
-                      ? sensorData.pH
-                      : sensorData.waterLevel,
-                    item
-                  )}
+                  value={100}
                   size={140}
                   thickness={5}
                   sx={{
