@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { erf } from "mathjs";  // Importamos la función erf de mathjs
-
-// Función para calcular la CDF de la distribución normal
-const normalCDF = (x, mean, stdDev) => {
-  return 0.5 * (1 + erf((x - mean) / (stdDev * Math.sqrt(2))));
-};
 
 function RiskAnalysis() {
-  const [data, setData] = useState([]);
-  const [riskAnalysis, setRiskAnalysis] = useState([]);
+  const [data, setData] = useState([]); // Datos de la API
+  const [riskAnalysis, setRiskAnalysis] = useState([]); // Análisis de riesgo reducido
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const phMean = 7; // Media del pH
-  const phStdDev = 0.5; // Desviación estándar del pH
-  const tempMean = 25; // Media de la temperatura
-  const tempStdDev = 3; // Desviación estándar de la temperatura
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +15,7 @@ function RiskAnalysis() {
         const token = Cookies.get("token");
         const response = await axios.get("https://fishmaster.duckdns.org/datos/getdatos", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Autorización con token
           },
         });
 
@@ -34,13 +23,13 @@ function RiskAnalysis() {
           id_usuario_especie: item.id_usuario_especie,
           temperatura_agua: parseFloat(item.temperatura_agua),
           ph_agua: parseFloat(item.ph_agua),
-          fecha: new Date(item.fecha),
+          fecha: new Date(item.fecha), // Convertir a objeto Date para filtrar por tiempo
         }));
 
         setData(formattedData);
         setLoading(false);
       } catch (err) {
-        setError("Error al cargar los datos");
+        setError("Error al cargar los datos del backend");
         console.error(err);
       }
     };
@@ -51,8 +40,9 @@ function RiskAnalysis() {
   useEffect(() => {
     if (data.length > 0) {
       const filteredData = data.filter((item, index) => {
+        // Filtrar para incluir solo un dato cada 1 hora
         const oneHourInMs = 1 * 60 * 60 * 1000;
-        if (index === 0) return true;
+        if (index === 0) return true; // Incluir siempre el primer dato
         const prevItem = data[index - 1];
         return item.fecha - prevItem.fecha >= oneHourInMs;
       });
@@ -60,20 +50,20 @@ function RiskAnalysis() {
       const analyzeRisk = filteredData.map((item) => {
         const { temperatura_agua, ph_agua, id_usuario_especie } = item;
 
-        // Calcular probabilidades de desastre para pH usando la distribución normal
-        const phProbability = normalCDF(ph_agua, phMean, phStdDev); // Probabilidad de que el pH esté dentro de un rango crítico
-
-        // Calcular probabilidades de desastre para temperatura usando la distribución normal
-        const tempProbability = normalCDF(temperatura_agua, tempMean, tempStdDev); // Probabilidad de que la temperatura esté fuera del rango seguro
-
+        // Análisis de riesgo basado en pH
         let phRisk = "Óptimo";
+        if (ph_agua < 5.5 || ph_agua > 8.5) phRisk = "Letal";
+        else if ((ph_agua >= 5.5 && ph_agua < 6.5) || (ph_agua > 8.0 && ph_agua <= 8.5)) phRisk = "Estrés";
+
+        // Análisis de riesgo basado en temperatura
         let tempRisk = "Óptimo";
+        if (temperatura_agua < 18 || temperatura_agua > 32) tempRisk = "Letal";
+        else if ((temperatura_agua >= 18 && temperatura_agua < 22) || (temperatura_agua > 28 && temperatura_agua <= 32)) tempRisk = "Estrés";
 
-        if (phProbability < 0.05) phRisk = "Letal"; // Si la probabilidad de pH fuera del rango seguro es baja (menos de 5%)
-        if (tempProbability < 0.05) tempRisk = "Letal"; // Lo mismo para la temperatura
-
+        // Determinar riesgo combinado
         let combinedRisk = "Bajo";
         if (phRisk === "Letal" || tempRisk === "Letal") combinedRisk = "Alto";
+        else if (phRisk === "Estrés" || tempRisk === "Estrés") combinedRisk = "Moderado";
 
         return {
           id_usuario_especie,
@@ -99,7 +89,7 @@ function RiskAnalysis() {
 
   return (
     <Container>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" color="textSecondary" gutterBottom>
         Análisis de Riesgo por Estanque (Muestras Cada 1 Hora)
       </Typography>
       <TableContainer component={Paper} sx={{ marginTop: 2, maxHeight: 400 }}>

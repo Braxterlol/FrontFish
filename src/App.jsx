@@ -9,7 +9,7 @@ import Graficas from './components/pages/Graficas';
 import Registro from './components/pages/RegistroPeces'
 import Perfiles from './components/pages/FishProfiles'
 import  Login  from './components/pages/Login1';
-import ProtectedRoute from "./ProtectedRoute";
+
 import Recomendacion from './components/pages/AddRecomendation'
 
 export default function App() {

@@ -64,12 +64,7 @@ const TemperatureChart = () => {
 
   return (
     <Container>
-     
       <Paper elevation={3} style={{ padding: '20px' }}>
-      <Typography variant="h5" gutterBottom>
-          Grafica de Temperatura 
-        </Typography>
-
         <Typography variant="h5" gutterBottom>
           Estanque ID: {selectedTankId}
         </Typography>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Cookies from "js-cookie";
 import axios from 'axios';
 import {
@@ -23,6 +23,8 @@ const DonutChart = () => {
     pH: 7.0,
     waterLevel: 'Desconocido',
   });
+
+  const sensorDataRef = useRef(sensorData);
 
   const config = {
     Temperatura: { ideal: 22, range: 5 },
@@ -58,18 +60,39 @@ const DonutChart = () => {
 
   const open = Boolean(anchorEl);
 
+  const isDataValid = (data) => {
+    if (
+      typeof data.temperature !== 'number' || isNaN(data.temperature) || data.temperature <= 0 ||
+      typeof data.pH !== 'number' || isNaN(data.pH) || data.pH <= 0 ||
+      (data.waterLevel !== 'Suficiente' && data.waterLevel !== 'Falta Agua')
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    sensorDataRef.current = sensorData; // Actualizar el valor de referencia cada vez que cambie sensorData
+  }, [sensorData]);
+
   useEffect(() => {
     const saveDataInterval = setInterval(() => {
       const saveSensorData = async () => {
         try {
           const token = Cookies.get("token");
+          const currentData = sensorDataRef.current;
+
+          if (!isDataValid(currentData)) {
+            console.warn("Datos incompletos o inválidos, no se envía la solicitud.");
+            return;
+          }
 
           const dataToSave = {
             id_usuario_especie: 18,
-            temperatura: sensorData.temperature.toFixed(2),
-            ph: sensorData.pH.toFixed(2),
-            nivel: sensorData.waterLevel === 'Suficiente' ? 1 : 0, // 1 para suficiente, 0 para falta de agua
-            cantidad_peces: 2,
+            temperatura: parseFloat(currentData.temperature).toFixed(2),
+            ph: parseFloat(currentData.pH).toFixed(2),
+            nivel: currentData.waterLevel === 'Suficiente' ? 1 : 0,
+            cantidad_peces: 10,
           };
 
           console.log("Datos que se van a guardar:", dataToSave);
@@ -90,9 +113,8 @@ const DonutChart = () => {
         }
       };
 
-      console.log("Ejecutando saveSensorData...");
       saveSensorData();
-    }, 60000);
+    }, 9000); // 9 segundos
 
     return () => clearInterval(saveDataInterval); // Limpiar el intervalo al desmontar
   }, []);
@@ -107,11 +129,12 @@ const DonutChart = () => {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log('Mensaje recibido:', data);
 
         if (data.event === 'rabbitmq_message') {
           const messageParts = data.data.split(', Mensaje: ');
-          const queue = messageParts[0].split(': ')[1];
-          const message = messageParts[1];
+          const queue = messageParts[0].split(': ')[1]; // Extraer "Cola"
+          const message = messageParts[1]; // Extraer "Mensaje"
 
           setSensorData((prevData) => {
             const updatedData = { ...prevData };
@@ -120,12 +143,9 @@ const DonutChart = () => {
               const temperature = parseFloat(message);
               updatedData.temperature = temperature;
             } else if (queue === 'datos') {
-              if (message.startsWith('pH')) {
-                const pH = parseFloat(message.split('|')[0].split(': ')[1]);
-                updatedData.pH = pH;
-              } else if (message.includes('CIRCUITO CERRADO')) {
+              if (message.includes('CIRCUITO ABIERTO')) {
                 updatedData.waterLevel = 'Falta Agua';
-              } else if (message.includes('CIRCUITO ABIERTO')) {
+              } else if (message.includes('CIRCUITO CERRADO')) {
                 updatedData.waterLevel = 'Suficiente';
               }
             }
