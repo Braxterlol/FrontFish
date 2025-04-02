@@ -1,22 +1,22 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
+  const location = useLocation();
   const token = localStorage.getItem("token");
-  const isFirstLogin = localStorage.getItem("isFirstLogin");
-  const userId = localStorage.getItem("userId"); // Obtener el ID del usuario
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
 
+  // Si no hay token, redirige al login
   if (!token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  if (!isFirstLogin) {
+  // Si es primer login (puedes ajustar esta lógica)
+  if (userData.isFirstLogin === false) {
     return <Navigate to="/Registro" replace />;
   }
 
-  // Pasar el userId como prop si es necesario
-  console.log(userId)
-  return React.cloneElement(children, { userId });
+  return children;
 };
 
 export default ProtectedRoute;

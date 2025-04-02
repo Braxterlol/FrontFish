@@ -27,6 +27,12 @@
     margin: 0;
     color: #ffffff;
   }
+
+  .sesion {
+    font-weight: bold;
+    margin: 0;
+    color: #0077cc;
+  }
   
   h2 {
     text-align: center;
@@ -91,12 +97,18 @@
   }
   
   input {
-    background-color: #eee;
+    background-color: #eee; /* Fondo gris claro */
     border: none;
     padding: 12px 15px;
     margin: 8px 0;
     width: 100%;
-  }
+    color: #333; /* Cambia el color del texto a oscuro */
+}
+
+input::placeholder {
+  color: #666; /* Un gris medio para mejor visibilidad */
+}
+
   
   .container {
     background-color: #fff;

@@ -1,11 +1,13 @@
 import React from "react";
+
 function SignUpForm() {
   const [state, setState] = React.useState({
     name: "",
     email: "",
     password: ""
   });
-  const handleChange = evt => {
+
+  const handleChange = (evt) => {
     const value = evt.target.value;
     setState({
       ...state,
@@ -13,20 +15,37 @@ function SignUpForm() {
     });
   };
 
-  const handleOnSubmit = evt => {
+  const handleOnSubmit = async (evt) => {
     evt.preventDefault();
 
+    // Se extraen los valores y se mapea 'name' a 'nombre' para el backend.
     const { name, email, password } = state;
-    alert(
-      `You are sign up with name: ${name} email: ${email} and password: ${password}`
-    );
 
-    for (const key in state) {
-      setState({
-        ...state,
-        [key]: ""
+    try {
+      const response = await fetch("http://localhost:4000/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: name, // Aquí se mapea el campo 'name' a 'nombre'
+          email,
+          password
+        })
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Usuario creado con éxito");
+      } else {
+        alert("Error: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error en la conexión", error);
+      alert("Error en la conexión con el servidor");
     }
+
+    // Se reinicia el formulario
+    setState({ name: "", email: "", password: "" });
   };
 
   return (
@@ -53,7 +72,7 @@ function SignUpForm() {
           placeholder="Name"
         />
         <input
-      
+          type="email"
           name="email"
           value={state.email}
           onChange={handleChange}
@@ -66,7 +85,7 @@ function SignUpForm() {
           onChange={handleChange}
           placeholder="Password"
         />
-        <button>Sign Up</button>
+        <button type="submit">Sign Up</button>
       </form>
     </div>
   );

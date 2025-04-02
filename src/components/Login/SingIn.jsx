@@ -29,7 +29,7 @@
       }
 
       try {
-        const response = await fetch("https://fishmaster.duckdns.org/login", {
+        const response = await fetch("http://localhost:4000/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -70,7 +70,7 @@
     return (
       <div className="form-container sign-in-container">
         <form onSubmit={handleOnSubmit}>
-          <h1>Iniciar sesión</h1>
+          <h1 className="sesion">Iniciar sesión</h1>
           <input
             placeholder="Correo"
             name="email"
