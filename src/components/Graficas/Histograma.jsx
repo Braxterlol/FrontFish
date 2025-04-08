@@ -22,7 +22,7 @@ function Histograma() {
           return;
         }
 
-        const response = await axios.get("https://fishmaster.duckdns.org/especies", {
+        const response = await axios.get("http://localhost:4000/especies", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

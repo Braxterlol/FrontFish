@@ -18,7 +18,6 @@ function SignUpForm() {
   const handleOnSubmit = async (evt) => {
     evt.preventDefault();
 
-    // Se extraen los valores y se mapea 'name' a 'nombre' para el backend.
     const { name, email, password } = state;
 
     try {
@@ -26,7 +25,7 @@ function SignUpForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nombre: name, // Aquí se mapea el campo 'name' a 'nombre'
+          nombre: name, 
           email,
           password
         })

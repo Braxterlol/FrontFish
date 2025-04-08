@@ -16,10 +16,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Ruta pública */}
         <Route path="/" element={<Login />} />
         
-        {/* Rutas protegidas */}
         <Route element={
           <ProtectedRoute>
             <AdminLayout />

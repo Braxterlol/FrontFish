@@ -29,7 +29,7 @@ const Inicio = () => {
             backgroundColor: 'white',
           }}
         >
-          <Box   justifyContent= 'center' sx={{ flexGrow: 1,  marginTop:'70px', display: 'flex', padding: 2 }}>
+          <Box   justifyContent= 'center' sx={{ flexGrow: 1,  marginTop:'70px', display: 'flex', padding: 2}}>
             <DonutChart /> {/* DonutChart al lado izquierdo */}
           </Box>
           <Box justifyContent='center' sx={{   display: 'flex',  padding: 2 }}>
@@ -43,10 +43,11 @@ const Inicio = () => {
             display: 'flex', 
             
             padding: 2,
+            marginBottom:30
            
           }}
         >
-          <Tabla /> {/* Tabla debajo de los gráficos */}
+        
         </Box>
       </Box>
     </ThemeProvider>

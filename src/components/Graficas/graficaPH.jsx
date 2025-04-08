@@ -11,7 +11,7 @@ const PHGraph = () => {
   useEffect(() => {
     // Llamada a la API para obtener los datos
     const token = Cookies.get("token");
-    axios.get('https://fishmaster.duckdns.org/datos/getdatos', {
+    axios.get('http://localhost:4000/datos/getdatos', {
       headers: {
         Authorization: `Bearer ${token}`, // Correcto formato
       },

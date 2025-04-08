@@ -34,7 +34,7 @@ const FishRegistrationForm = () => {
     const fetchFishData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get('https://fishmaster.duckdns.org/especies', {
+        const response = await axios.get('http://localhost:4000/especies', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,7 +82,7 @@ const FishRegistrationForm = () => {
       const token = Cookies.get("token");
 
       const response = await axios.post(
-        'https://fishmaster.duckdns.org/especies',
+        'http://localhost:4000/especies',
         newFish,
         {
           headers: {
@@ -96,7 +96,7 @@ const FishRegistrationForm = () => {
       localStorage.setItem('IdEspecie', idEspecie);
 
       await axios.post(
-        'https://fishmaster.duckdns.org/especies_user',
+        'http://localhost:4000/especies_user',
         { idUsuario, idEspecie },
         {
           headers: {

@@ -23,7 +23,6 @@ const DonutChart = () => {
     pH: 7.0,
     waterLevel: 'Desconocido',
   });
-
   const sensorDataRef = useRef(sensorData);
 
   const config = {
@@ -81,24 +80,23 @@ const DonutChart = () => {
         try {
           const token = Cookies.get("token");
           const currentData = sensorDataRef.current;
-
           if (!isDataValid(currentData)) {
             console.warn("Datos incompletos o inválidos, no se envía la solicitud.");
             return;
           }
 
-          const dataToSave = {
-            id_usuario_especie: 18,
-            temperatura: parseFloat(currentData.temperature).toFixed(2),
-            ph: parseFloat(currentData.pH).toFixed(2),
-            nivel: currentData.waterLevel === 'Suficiente' ? 1 : 0,
-            cantidad_peces: 10,
-          };
+         const dataToSave = {
+  id_usuario_especie: 1,
+  temperatura: parseFloat(currentData.temperature),
+  ph: parseFloat(currentData.pH),
+  nivel: currentData.waterLevel === 'Suficiente' ? 1 : 0,
+  cantidad_peces: 10, // valor numérico explícito
+};
+
 
           console.log("Datos que se van a guardar:", dataToSave);
-
           const response = await axios.post(
-            'https://fishmaster.duckdns.org/datos/createdatos',
+            'http://localhost:4000/datos/createdatos',
             dataToSave,
             {
               headers: {
@@ -106,7 +104,6 @@ const DonutChart = () => {
               },
             }
           );
-
           console.log('Respuesta del servidor:', response.data);
         } catch (error) {
           console.error('Error al guardar los datos:', error.response?.data || error.message);
@@ -120,7 +117,7 @@ const DonutChart = () => {
   }, []);
 
   useEffect(() => {
-    const ws = new WebSocket('wss://wsfish.zapto.org:8443');
+    const ws = new WebSocket('ws://localhost:8080');
 
     ws.onopen = () => {
       console.log('Conexión WebSocket establecida');
@@ -135,13 +132,31 @@ const DonutChart = () => {
           const messageParts = data.data.split(', Mensaje: ');
           const queue = messageParts[0].split(': ')[1]; // Extraer "Cola"
           const message = messageParts[1]; // Extraer "Mensaje"
-
+          
           setSensorData((prevData) => {
             const updatedData = { ...prevData };
-
+            
             if (queue === 'temperature_data') {
-              const temperature = parseFloat(message);
-              updatedData.temperature = temperature;
+              try {
+                // Intentar analizar el mensaje como JSON válido primero
+                const parsedMessage = JSON.parse(message.replace(/'/g, '"'));
+                if (parsedMessage && typeof parsedMessage.temperature === 'number') {
+                  updatedData.temperature = parsedMessage.temperature;
+                } else {
+                  // Si no es un objeto con temperatura, intentar extraer directamente
+                  const temperatureMatch = message.match(/temperature': (\d+\.\d+)/);
+                  if (temperatureMatch && temperatureMatch[1]) {
+                    updatedData.temperature = parseFloat(temperatureMatch[1]);
+                  }
+                }
+              } catch (parseError) {
+                console.error("Error al procesar el mensaje de temperatura:", parseError);
+                // Intentar extraer el valor de temperatura con regex como fallback
+                const temperatureMatch = message.match(/temperature': (\d+\.\d+)/);
+                if (temperatureMatch && temperatureMatch[1]) {
+                  updatedData.temperature = parseFloat(temperatureMatch[1]);
+                }
+              }
             } else if (queue === 'datos') {
               if (message.includes('CIRCUITO ABIERTO')) {
                 updatedData.waterLevel = 'Falta Agua';
@@ -149,7 +164,7 @@ const DonutChart = () => {
                 updatedData.waterLevel = 'Suficiente';
               }
             }
-
+            
             return updatedData;
           });
         }
@@ -197,6 +212,7 @@ const DonutChart = () => {
                   <InfoOutlinedIcon />
                 </IconButton>
               </Box>
+
               <Popover
                 id={`popover-${item}`}
                 sx={{ pointerEvents: 'none' }}

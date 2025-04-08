@@ -13,7 +13,7 @@ const DatosEstanque = () => {
     const fetchDatos = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get('https://fishmaster.duckdns.org/datos/getdatos', {
+        const response = await axios.get('http://localhost:4000/datos/getdatos', {
           headers: {
             Authorization: `Bearer ${token}`, // Correcto formato
           },
